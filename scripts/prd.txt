@@ -1,0 +1,252 @@
+<context>
+# Overview
+The DCF Calculator is a web-based tool designed for retail investors who want a quick, intuitive way to evaluate whether a stock is undervalued or overvalued based on its intrinsic value. It combines automated financial data fetching with minimal user input to calculate discounted cash flows, helping users make informed investment decisions without the complexity of traditional valuation models.
+
+# Core Features
+## Automated Financial Data Fetching
+- Pulls Free Cash Flow (TTM), Current Share Price, Shares Outstanding, and Market Cap using the stock ticker
+- Uses Financial Modeling Prep API to retrieve real-time data
+- Eliminates manual lookup of financial metrics, reducing errors and saving time
+
+## User-Friendly Input Interface
+- Simple form with essential inputs: Stock Ticker, Terminal Growth Rate, Discount Rate, and Growth Rates
+- Provides option for either constant growth rate across all years or detailed year-by-year growth inputs
+- Includes reasonable default values and ranges for investors unfamiliar with DCF parameters
+
+## DCF Calculation Engine
+- Projects future cash flows based on user-specified growth rates
+- Discounts projected cash flows to present value
+- Calculates intrinsic value per share
+
+## Results Visualization
+- Displays calculated intrinsic value alongside current market price
+- Shows percentage difference between intrinsic value and market price
+- Provides clear "Undervalued" or "Overvalued" verdict with visual indicators
+- Includes a simple chart comparing current price to intrinsic value
+
+## Responsive Design
+- Mobile-optimized layout that works on smartphones, tablets, and desktops
+- Touch-friendly inputs with clear labeling
+- Adapts to different screen sizes without loss of functionality
+- Supports dark/light theme toggle with persistent preference storage
+
+# User Experience
+## User Personas
+1. **Retail Investor Alex**
+   - Has basic investment knowledge but limited time
+   - Wants quick analysis tools to support buy/sell decisions
+   - Prefers intuitive interfaces over complex spreadsheets
+
+2. **Finance Student Taylor**
+   - Learning about valuation models in finance courses
+   - Needs practical tools to apply theoretical knowledge
+   - Values transparency in calculation methodology
+
+## Key User Flows
+1. **Initial Valuation**
+   - User enters stock ticker
+   - Sets discount rate and terminal growth rate
+   - Chooses between simple or detailed growth rate inputs
+   - Submits form to calculate intrinsic value
+   - Reviews results and valuation verdict
+
+2. **Scenario Analysis**
+   - Adjusts input parameters to test different scenarios
+   - Observes how changes affect the intrinsic value
+   - Uses insights to make more informed investment decisions
+
+## UI/UX Considerations
+- Minimalist design focusing on key information
+- Color-coded indicators (green for undervalued, red for overvalued)
+- Progressive disclosure for advanced options (detailed growth rates)
+- Tooltips or info icons explaining financial concepts
+- Responsive layout adapting to any device size
+</context>
+
+<PRD>
+# Technical Architecture
+
+## System Components
+1. **Frontend UI Layer**
+   - React with TypeScript for type safety and component structure
+   - Tailwind CSS for styling and responsive design
+   - Chart.js for data visualization components
+   - Context API for state management (theme, calculation results)
+
+2. **Data Service Layer**
+   - API integration service for Financial Modeling Prep
+   - Caching mechanism for recently fetched stock data
+   - Error handling and retry logic for API failures
+
+3. **Calculation Engine**
+   - DCF calculation module with configurability for growth models
+   - Input validation and sanitization
+   - Numerical processing utilities
+
+## Data Models
+
+### User Inputs
+```typescript
+interface DCFInputs {
+  ticker: string;
+  terminalGrowthRate: number;
+  discountRate: number;
+  growthRates: number[] | number;
+}
+```
+
+### Stock Data
+```typescript
+interface StockData {
+  freeCashFlowTTM: number;
+  currentPrice: number;
+  sharesOutstanding: number;
+  marketCap: number;
+}
+```
+
+### Calculation Results
+```typescript
+interface DCFResults {
+  intrinsicValue: number;
+  currentPrice: number;
+  percentageDifference: number;
+  verdict: 'Undervalued' | 'Overvalued';
+}
+```
+
+## APIs and Integrations
+- **Financial Modeling Prep API**
+  - Endpoint: `/v3/cash-flow-statement/{ticker}` for Free Cash Flow data
+  - Endpoint: `/v3/quote/{ticker}` for price and shares outstanding
+  - Rate limits: 5 requests/minute on free tier
+  - Authentication via API key
+
+## Infrastructure Requirements
+- **Hosting:** Static hosting on Vercel or Netlify
+- **Environment:** Client-side only, no server requirements
+- **API Keys:** Secure storage of FMP API key in environment variables
+
+# Development Roadmap
+
+## Phase 1: MVP Implementation
+1. **Basic UI Setup**
+   - Create project structure with Vite, React, and TypeScript
+   - Implement responsive layout with Tailwind CSS
+   - Build input form component with validation
+
+2. **API Integration**
+   - Set up Financial Modeling Prep API connection
+   - Implement data fetching service
+   - Add error handling for API requests
+
+3. **DCF Calculation Core**
+   - Implement the DCF algorithm
+   - Support both single and multi-year growth rate inputs
+   - Calculate intrinsic value and valuation verdict
+
+4. **Results Display**
+   - Create results card with valuation metrics
+   - Add basic visual indicators for undervalued/overvalued status
+   - Implement simple bar chart comparing market price to intrinsic value
+
+5. **Theme Support**
+   - Implement light/dark mode toggle
+   - Add persistent theme preference storage
+
+## Phase 2: Enhanced Features
+1. **Advanced Visualizations**
+   - Add projected cash flows chart
+   - Implement sensitivity analysis chart
+   - Add historical FCF growth visualization
+
+2. **Input Enhancements**
+   - Add presets for industry-standard discount rates
+   - Implement auto-suggestions for growth rates based on historical data
+   - Add tooltips explaining financial concepts
+
+3. **Local Storage**
+   - Save recent calculations
+   - Implement calculation history
+   - Add ability to compare multiple stocks
+
+## Phase 3: Premium Features
+1. **Advanced Analysis**
+   - Add Monte Carlo simulation for probability distributions
+   - Implement multiple valuation methods comparison
+   - Add competitor comparison for relative valuation
+
+2. **Data Exports**
+   - Add PDF report generation
+   - Implement spreadsheet export
+   - Add data API for integration with other tools
+
+3. **Account System**
+   - User registration and authentication
+   - Saved portfolios and watchlists
+   - Custom alerts for valuation thresholds
+
+# Logical Dependency Chain
+
+## Foundation (Build First)
+1. Project setup with Vite, React, TypeScript, and Tailwind CSS
+2. Basic UI components and responsive layout
+3. Financial Modeling Prep API integration
+4. Core DCF calculation algorithm
+
+## Working Prototype (Get to Quickly)
+1. Simple input form with stock ticker, discount rate, and growth rate
+2. Basic results display showing intrinsic value and verdict
+3. Basic error handling and loading states
+4. Light/dark theme toggle
+
+## Iterative Enhancements (Build Upon)
+1. Add detailed growth rate inputs option
+2. Improve results visualization with basic chart
+3. Enhance UI with better visual indicators and styling
+4. Add input validation and helpful tooltips
+5. Implement local storage for recent calculations
+
+# Risks and Mitigations
+
+## Technical Challenges
+- **Risk:** API rate limits causing poor user experience
+  - **Mitigation:** Implement caching for recently fetched data and clear loading states
+
+- **Risk:** Complex calculations leading to performance issues
+  - **Mitigation:** Optimize calculation logic and consider web workers for heavy computations
+
+- **Risk:** Responsive design compatibility issues
+  - **Mitigation:** Test across multiple devices and use Tailwind's responsive classes consistently
+
+## MVP Scoping
+- **Risk:** Feature creep extending development timeline
+  - **Mitigation:** Strictly prioritize core DCF functionality for MVP; defer advanced features
+
+- **Risk:** Over-engineering the solution
+  - **Mitigation:** Focus on simplicity and user experience; avoid complex state management
+
+## Resource Constraints
+- **Risk:** Limited free API calls on Financial Modeling Prep
+  - **Mitigation:** Implement efficient caching and consider alternative data sources
+
+- **Risk:** Maintaining calculation accuracy
+  - **Mitigation:** Add unit tests for calculation engine and validate results against benchmarks
+
+# Appendix
+
+## DCF Calculation Methodology
+The DCF calculation follows these steps:
+1. Start with the current Free Cash Flow (FCF)
+2. Project FCF for 10 years using specified growth rates
+3. Calculate terminal value using Gordon Growth Model: TV = FCF₁₀ × (1 + g) / (r - g)
+4. Discount all projected cash flows and terminal value to present value
+5. Sum all discounted values to get enterprise value
+6. Divide by shares outstanding to get intrinsic value per share
+
+## Key Financial Terms
+- **Free Cash Flow:** Cash generated after accounting for capital expenditures
+- **Discount Rate:** Required rate of return, reflecting investment risk
+- **Terminal Growth Rate:** Expected long-term growth rate after explicit forecast period
+- **Intrinsic Value:** Estimated "true" value of a stock based on future cash flows
+</PRD> 
