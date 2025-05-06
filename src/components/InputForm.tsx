@@ -18,19 +18,18 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
     growthRates: useDetailedGrowth ? Array(10).fill(10) : 10,
   });
   
-  // New state for stock data that would have been fetched
+  // Stock data state without market cap
   const [stockData, setStockData] = useState<StockData>({
     freeCashFlowTTM: 0,
     currentPrice: 0,
     sharesOutstanding: 0,
-    marketCap: 0,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === 'ticker') {
       setInputs(prev => ({ ...prev, [name]: value.toUpperCase() }));
-    } else if (['freeCashFlowTTM', 'currentPrice', 'sharesOutstanding', 'marketCap'].includes(name)) {
+    } else if (['freeCashFlowTTM', 'currentPrice', 'sharesOutstanding'].includes(name)) {
       // Handle stock data inputs
       setStockData(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
     } else {
@@ -77,6 +76,9 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
         {/* Financial data inputs that would have been fetched from the API */}
         <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-800 space-y-4">
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Stock Financial Data</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Enter financial values in millions USD (e.g., for $6.8 billion, enter 6800)
+          </p>
           
           <TextField
             id="currentPrice"
@@ -88,41 +90,32 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
             step="0.01"
             min={0}
             required
+            helperText="Enter the current market price per share in dollars"
           />
           
           <TextField
             id="freeCashFlowTTM"
             name="freeCashFlowTTM"
-            label="Free Cash Flow TTM ($)"
+            label="Free Cash Flow TTM (in millions $)"
             type="number"
             value={stockData.freeCashFlowTTM}
             onChange={handleInputChange}
             step="1"
             required
+            helperText="Trailing 12 months free cash flow in millions USD"
           />
           
           <TextField
             id="sharesOutstanding"
             name="sharesOutstanding"
-            label="Shares Outstanding"
+            label="Shares Outstanding (in millions)"
             type="number"
             value={stockData.sharesOutstanding}
             onChange={handleInputChange}
             step="1"
             min={0}
             required
-          />
-          
-          <TextField
-            id="marketCap"
-            name="marketCap"
-            label="Market Cap ($)"
-            type="number"
-            value={stockData.marketCap}
-            onChange={handleInputChange}
-            step="1"
-            min={0}
-            required
+            helperText="Total shares outstanding in millions"
           />
         </div>
         
@@ -139,6 +132,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
             step="0.1"
             min={0}
             required
+            helperText="Typically between 8-12% for most companies"
           />
 
           <TextField
@@ -150,6 +144,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
             onChange={handleInputChange}
             step="0.1"
             required
+            helperText="Long-term growth rate, typically between 2-4%"
           />
 
           <div>
@@ -196,6 +191,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
                 onChange={(e) => handleGrowthRateChange(0, e.target.value)}
                 step="0.1"
                 required
+                helperText="Annual growth rate for years 1-10"
               />
             )}
           </div>

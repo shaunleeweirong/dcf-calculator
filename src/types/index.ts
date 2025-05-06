@@ -2,7 +2,6 @@ export interface StockData {
   freeCashFlowTTM: number;
   currentPrice: number;
   sharesOutstanding: number;
-  marketCap: number;
 }
 
 export interface DCFInputs {

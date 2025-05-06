@@ -1,6 +1,6 @@
 import React from 'react';
 import { DCFResults } from '../types';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import Card from './Card';
 import {
   Chart as ChartJS,
@@ -8,6 +8,7 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -18,6 +19,7 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -46,23 +48,22 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results, className = ''
         label: 'Stock Value Comparison',
         data: [currentPrice, intrinsicValue],
         backgroundColor: [
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
+          verdict === 'Undervalued' ? 'rgba(54, 162, 235, 0.7)' : 'rgba(255, 99, 132, 0.7)',
+          verdict === 'Undervalued' ? 'rgba(75, 192, 192, 0.7)' : 'rgba(255, 159, 64, 0.7)',
         ],
         borderColor: [
-          'rgba(54, 162, 235, 1)',
-          'rgba(75, 192, 192, 1)',
+          verdict === 'Undervalued' ? 'rgba(54, 162, 235, 1)' : 'rgba(255, 99, 132, 1)',
+          verdict === 'Undervalued' ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 159, 64, 1)',
         ],
         borderWidth: 1,
-        pointRadius: 5,
-        pointHoverRadius: 7,
       },
     ],
   };
 
-  const chartOptions: import('chart.js').ChartOptions<'line'> = {
+  const chartOptions: import('chart.js').ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
+    indexAxis: 'x',
     plugins: {
       legend: {
         display: false,
@@ -73,6 +74,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results, className = ''
         font: {
           size: 16,
         },
+        color: '#718096',
       },
       tooltip: {
         callbacks: {
@@ -95,12 +97,19 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results, className = ''
         ticks: {
           callback: function(value) {
             return '$' + value.toLocaleString();
-          }
+          },
+          color: '#718096',
+        },
+        grid: {
+          color: 'rgba(113, 128, 150, 0.2)',
         }
       },
       x: {
         grid: {
           display: false,
+        },
+        ticks: {
+          color: '#718096',
         }
       }
     },
@@ -182,7 +191,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results, className = ''
         </div>
         
         <div className="h-64 relative">
-          <Line data={chartData} options={chartOptions} aria-label="Line chart comparing Current Price and Intrinsic Value" />
+          <Bar data={chartData} options={chartOptions} aria-label="Bar chart comparing Current Price and Intrinsic Value" />
         </div>
       </Card>
 

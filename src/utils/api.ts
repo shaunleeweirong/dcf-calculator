@@ -125,9 +125,9 @@ export const fetchStockData = async (ticker: string): Promise<StockData> => {
       throw new Error(`No quote data found for ticker: ${upperCaseTicker}`);
     }
     
-    const { price: currentPrice, sharesOutstanding, marketCap } = quoteResponse.data[0];
+    const { price: currentPrice, sharesOutstanding } = quoteResponse.data[0];
 
-    if (typeof currentPrice !== 'number' || typeof sharesOutstanding !== 'number' || typeof marketCap !== 'number') {
+    if (typeof currentPrice !== 'number' || typeof sharesOutstanding !== 'number') {
       throw new Error(`Invalid quote data structure received for ticker: ${upperCaseTicker}`);
     }
 
@@ -135,25 +135,20 @@ export const fetchStockData = async (ticker: string): Promise<StockData> => {
       freeCashFlowTTM: fcfTTM,
       currentPrice,
       sharesOutstanding,
-      marketCap,
     };
 
     // Store in cache
-    stockDataCache.set(cacheKey, { data: fetchedData, timestamp: Date.now() });
+    stockDataCache.set(cacheKey, {
+      data: fetchedData,
+      timestamp: Date.now(),
+    });
 
     return fetchedData;
   } catch (error) {
     console.error('Error fetching stock data:', error);
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        throw new Error('Invalid API key or insufficient permissions. Please check your Financial Modeling Prep API key.');
-      } else if (error.response?.status === 404) {
-        // FMP API sometimes returns 404 even for valid tickers if data isn't available
-        // Check specific conditions if possible, otherwise assume ticker might be invalid
-         throw new Error(`Stock ticker not found or data unavailable: ${upperCaseTicker}. Please check the ticker symbol.`);
-      }
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(`API Error (${error.response.status}): ${error.response.data?.message || error.message}`);
     }
-    // Re-throw generic error if it's not an Axios error or a specific handled status
-    throw new Error('Failed to fetch stock data. An unexpected error occurred.');
+    throw error;
   }
 }; 

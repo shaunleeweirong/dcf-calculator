@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface TextFieldProps {
+export interface TextFieldProps {
   id: string;
   name: string;
   label: string;
@@ -13,6 +13,7 @@ interface TextFieldProps {
   max?: number;
   step?: string;
   error?: string;
+  helperText?: string;
   className?: string;
   disabled?: boolean;
 }
@@ -30,9 +31,12 @@ const TextField: React.FC<TextFieldProps> = ({
   max,
   step,
   error,
+  helperText,
   className = '',
   disabled = false,
 }) => {
+  const helperId = helperText ? `${id}-helper` : undefined;
+  
   return (
     <div className={`w-full ${className}`}>
       <label 
@@ -61,11 +65,16 @@ const TextField: React.FC<TextFieldProps> = ({
           ${disabled ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}
         `}
         aria-invalid={error ? 'true' : 'false'}
-        aria-describedby={error ? `${id}-error` : undefined}
+        aria-describedby={error ? `${id}-error` : helperId}
       />
       {error && (
         <p id={`${id}-error`} className="mt-1 text-sm text-red-600 dark:text-red-400">
           {error}
+        </p>
+      )}
+      {helperText && !error && (
+        <p id={helperId} className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {helperText}
         </p>
       )}
     </div>

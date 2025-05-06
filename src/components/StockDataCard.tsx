@@ -45,21 +45,12 @@ const StockDataCard: React.FC<StockDataCardProps> = ({ data, className = '' }) =
           </span>
         </div>
         
-        <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+        <div className="flex justify-between">
           <span className="text-sm text-gray-600 dark:text-gray-400">
             Shares Outstanding
           </span>
           <span className="font-medium">
             {formatNumber(data.sharesOutstanding)}
-          </span>
-        </div>
-        
-        <div className="flex justify-between">
-          <span className="text-sm text-gray-600 dark:text-gray-400">
-            Market Cap
-          </span>
-          <span className="font-medium">
-            {formatCurrency(data.marketCap)}
           </span>
         </div>
       </div>
